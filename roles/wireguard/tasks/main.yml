@@ -1,0 +1,52 @@
+---
+- name: Install wireguard and iptables
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - wireguard
+      - iptables
+- name: Create wireguard directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/wireguard
+    state: directory
+    mode: '1750'
+- name: Generate private key
+  become: true
+  ansible.builtin.shell: |
+    umask 077
+    wg genkey > private_key
+  args:
+    chdir: /etc/wireguard
+    creates: private_key
+- name: Generate public key
+  become: true
+  ansible.builtin.shell: |
+    umask 077
+    cat private_key | wg pubkey > public_key
+  args:
+    chdir: /etc/wireguard
+    creates: public_key
+- name: Enable packet forwarding
+  become: true
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: true
+- name: Read private key
+  become: true
+  ansible.builtin.slurp:
+    path: /etc/wireguard/private_key
+  register: private_key
+- name: Copy wireguard config
+  become: true
+  ansible.builtin.template:
+    src: wg0.conf.j2
+    dest: /etc/wireguard/wg0.conf
+- name: Enable wireguard service
+  become: true
+  ansible.builtin.systemd_service:
+    name: wg-quick@wg0
+    state: restarted
+    enabled: true

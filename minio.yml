@@ -1,0 +1,5 @@
+---
+- hosts: webservers
+  roles:
+    - role: minio
+      minio_root_password: "{{ minio_root_password }}"

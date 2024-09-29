@@ -1,0 +1,24 @@
+local_domain: m.comfycamp.space
+
+vapid_public_key: change_me
+vapid_private_key: change_me
+otp_secret: change_me
+secret_key_base: change_me
+
+db_host: postgresql
+db_user: mastodon
+db_name: mastodon
+db_pass: change_me
+db_port: "5432"
+
+smtp_server: comfycamp.space
+smtp_port: "465"
+smtp_login: mastodon@comfycamp.space
+smtp_password: change_me
+smtp_from_address: mastodon@comfycamp.space
+
+s3_endpoint: http://minio:9000
+s3_hostname: s3.comfycamp.space
+s3_bucket: mastodon
+aws_access_key_id: WfSoEsOL1Glg9GXc3sRN
+aws_secret_access_key: change_me

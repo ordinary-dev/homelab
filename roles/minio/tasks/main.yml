@@ -1,0 +1,31 @@
+---
+- name: Create minio volume
+  become: true
+  community.docker.docker_volume:
+    name: minio
+- name: Create minio network
+  become: true
+  community.docker.docker_network:
+    name: minio
+- name: Run minio container
+  become: true
+  community.docker.docker_container:
+    name: minio
+    image: minio/minio:{{ minio_version }}
+    command: ["minio", "server", "--console-address", ":9001"]
+    networks:
+      - name: minio
+    volumes:
+      - minio:/data
+    ports:
+      - 127.0.0.1:3003:9001
+      - 127.0.0.1:9000:9000
+    env:
+      MINIO_ROOT_USER: "{{ minio_root_user }}"
+      MINIO_ROOT_PASSWORD: "{{ minio_root_password }}"
+      MINIO_VOLUMES: /data
+    restart_policy: unless-stopped
+- name: Install rclone
+  become: true
+  ansible.builtin.apt:
+    name: rclone

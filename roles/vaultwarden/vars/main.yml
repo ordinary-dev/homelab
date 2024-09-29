@@ -1,0 +1,2 @@
+db_url: postgresql://vaultwarden:password@postgresql:5432/vaultwarden
+domain: https://vault.comfycamp.space

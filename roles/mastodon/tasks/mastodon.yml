@@ -1,0 +1,64 @@
+---
+- name: Create mastodon's public volume
+  become: true
+  community.docker.docker_volume:
+    name: mastodon-public-system
+- name: Create mastodon config directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/mastodon
+    state: directory
+    mode: '1750'
+    owner: root
+    group: root
+- name: Copy env file
+  become: true
+  ansible.builtin.template:
+    src: mastodon.env.j2
+    dest: /etc/mastodon/.env
+    mode: '0660'
+    owner: root
+    group: root
+- name: Create web container
+  become: true
+  community.docker.docker_container:
+    name: mastodon-web
+    image: ghcr.io/mastodon/mastodon:v4.2.12
+    env_file: /etc/mastodon/.env
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+    networks:
+      - name: redis-mastodon
+      - name: postgresql
+      - name: minio
+    ports:
+      - 127.0.0.1:3000:3000
+    volumes:
+      - mastodon-public-system:/mastodon/public/system
+    restart_policy: unless-stopped
+- name: Create streaming container
+  become: true
+  community.docker.docker_container:
+    name: mastodon-streaming
+    image: ghcr.io/mastodon/mastodon-streaming:nightly.2024-08-19
+    env_file: /etc/mastodon/.env
+    command: ["node", "./streaming/index.js"]
+    networks:
+      - name: redis-mastodon
+      - name: postgresql
+    ports:
+      - 127.0.0.1:3001:4000
+    restart_policy: unless-stopped
+- name: Create sidekiq container
+  become: true
+  community.docker.docker_container:
+    name: mastodon-sidekiq
+    image: ghcr.io/mastodon/mastodon:v4.2.12
+    env_file: /etc/mastodon/.env
+    command: ["bundle", "exec", "sidekiq"]
+    networks:
+      - name: redis-mastodon
+      - name: postgresql
+      - name: minio
+    volumes:
+      - mastodon-public-system:/mastodon/public/system
+    restart_policy: unless-stopped

@@ -1,0 +1,42 @@
+---
+- name: Create docker network
+  become: true
+  community.docker.docker_network:
+    name: postgresql
+- name: Create docker volume
+  become: true
+  community.docker.docker_volume:
+    name: postgresql
+- name: Create postgresql container
+  become: true
+  community.docker.docker_container:
+    name: postgresql
+    image: postgres:16.4-bookworm
+    networks:
+      - name: postgresql
+    volumes:
+      - postgresql:/var/lib/postgresql/data
+    env:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+    restart_policy: unless-stopped
+- name: Create a function to manage users
+  become: true
+  community.docker.docker_container_exec:
+    container: postgresql
+    argv:
+      - /bin/bash 
+      - "-c"
+      - echo "{{ lookup('file', 'create-user.sql') }}" | psql -U postgres
+- name: Create roles
+  become: true
+  community.docker.docker_container_exec:
+    container: postgresql
+    argv:
+      - /bin/bash
+      - "-c"
+      - echo "SELECT create_user_if_not_exists('{{ item.key }}', '{{ item.value }}')" | psql -U postgres
+  no_log: True
+  loop:
+    "{{ users | dict2items }}"

@@ -1,0 +1,11 @@
+---
+- hosts: webservers
+  roles:
+    - role: mastodon
+      vapid_public_key: "{{ mastodon_vapid_public_key }}"
+      vapid_private_key: "{{ mastodon_vapid_private_key }}"
+      db_pass: "{{ mastodon_postgresql_password }}"
+      otp_secret: "{{ mastodon_otp_secret }}"
+      secret_key_base: "{{ mastodon_secret_key_base }}"
+      smtp_password: "{{ mastodon_smtp_password }}"
+      aws_secret_access_key: "{{ mastodon_aws_secret_access_key }}"

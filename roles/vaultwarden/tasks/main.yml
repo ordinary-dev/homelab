@@ -1,0 +1,21 @@
+---
+- name: Create vaultwarden docker volume
+  become: true
+  community.docker.docker_volume:
+    name: vaultwarden
+- name: Create vaultwarden container
+  become: true
+  community.docker.docker_container:
+    name: vaultwarden
+    image: vaultwarden/server:1.32.0
+    env:
+      DOMAIN: "{{ domain }}"
+      LOG_LEVEL: warn
+      DATABASE_URL: "{{ db_url }}"
+    networks:
+      - name: postgresql
+    ports:
+      - 127.0.0.1:3002:80
+    volumes:
+      - vaultwarden:/data
+    restart_policy: unless-stopped

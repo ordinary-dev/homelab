@@ -1,0 +1,48 @@
+---
+- name: Create docker network
+  become: true
+  community.docker.docker_network:
+    name: redis-mastodon
+
+- name: Create redis docker volume
+  become: true
+  community.docker.docker_volume:
+    name: redis-mastodon
+- name: Create redis cache docker volume
+  become: true
+  community.docker.docker_volume:
+    name: redis-mastodon-cache
+
+- name: Copy redis config
+  become: true
+  ansible.builtin.copy:
+    src: redis.conf
+    dest: /var/lib/docker/volumes/redis-mastodon/_data/redis.conf
+- name: Copy redis cache config
+  become: true
+  ansible.builtin.copy:
+    src: redis-cache.conf
+    dest: /var/lib/docker/volumes/redis-mastodon-cache/_data/redis.conf
+
+- name: Create redis container
+  become: true
+  community.docker.docker_container:
+    name: redis-mastodon
+    image: redis:7.4-bookworm
+    command: ["redis-server", "/data/redis.conf"]
+    networks:
+      - name: redis-mastodon
+    volumes:
+      - redis-mastodon:/data
+    restart_policy: unless-stopped
+- name: Create redis cache container
+  become: true
+  community.docker.docker_container:
+    name: redis-mastodon-cache
+    image: redis:7.4-bookworm
+    command: ["redis-server", "/data/redis.conf"]
+    networks:
+      - name: redis-mastodon
+    volumes:
+      - redis-mastodon-cache:/data
+    restart_policy: unless-stopped

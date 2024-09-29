@@ -1,0 +1,10 @@
+[Interface]
+PrivateKey = {{ private_key.content | b64decode }}
+Address = 10.110.0.1/24
+ListenPort = 51840
+PostUp   = iptables -A FORWARD -i %i -j ACCEPT; iptables -t nat -A POSTROUTING -o ens18 -j MASQUERADE
+PostDown = iptables -D FORWARD -i %i -j ACCEPT; iptables -t nat -D POSTROUTING -o ens18 -j MASQUERADE
+
+[Peer]
+PublicKey = awAVP/tkl0Z9PKEMTABjIXhblWSGHhIvYjBFp3C7YUk=
+AllowedIPs = 10.110.0.2/32

@@ -1,0 +1,5 @@
+---
+- hosts: webservers
+  roles:
+    - role: tls
+      dns_cloudflare_api_token: "{{ dns_cloudflare_api_token }}"

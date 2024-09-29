@@ -1,0 +1,8 @@
+---
+- hosts: webservers
+  roles:
+    - role: postgresql
+      postgres_password: "{{ postgres_password }}"
+      users:
+        mastodon: "{{ mastodon_postgresql_password }}"
+        vaultwarden: "{{ vaultwarden_postgresql_password }}"

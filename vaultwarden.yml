@@ -1,0 +1,5 @@
+---
+- hosts: webservers
+  roles:
+    - role: vaultwarden
+      db_url: postgresql://vaultwarden:{{ vaultwarden_postgresql_password }}@postgresql:5432/vaultwarden
