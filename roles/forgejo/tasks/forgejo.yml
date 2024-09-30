@@ -1,0 +1,37 @@
+---
+- name: Create forgejo volume
+  become: true
+  community.docker.docker_volume:
+    name: forgejo
+- name: Copy app.ini
+  become: true
+  ansible.builtin.template:
+    src: app.ini.j2
+    dest: /var/lib/docker/volumes/forgejo/_data/custom/conf/app.ini
+    owner: 1000
+    group: 1000
+    mode: '0660'
+  register: appini
+- name: Create forgejo container
+  become: true
+  community.docker.docker_container:
+    name: forgejo
+    image: codeberg.org/forgejo/forgejo:8.0.3
+    env:
+      USER_UID: "1000"
+      USER_GID: "1000"
+      FORGEJO_WORK_DIR: "/data"
+      FORGEJO_CUSTOM: "/data/custom"
+    networks:
+      - name: postgresql
+      - name: redis-forgejo
+      - name: minio
+    volumes:
+      - forgejo:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "127.0.0.1:3004:3000"
+      - "8022:8022"
+    restart_policy: unless-stopped
+    recreate: "{{ appini.changed }}"

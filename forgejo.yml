@@ -1,0 +1,11 @@
+---
+- hosts: webservers
+  roles:
+    - role: forgejo
+      postgresql_password: "{{ forgejo_postgresql_password }}"
+      smtp_password: "{{ forgejo_smtp_password }}"
+      oauth2_jwt_secret: "{{ forgejo_oauth2_jwt_secret }}"
+      internal_token: "{{ forgejo_internal_token }}"
+      secret_key: "{{ forgejo_secret_key }}"
+      lfs_jwt_secret: "{{ forgejo_lfs_jwt_secret }}"
+      minio_secret_access_key: "{{ forgejo_minio_secret_access_key }}"

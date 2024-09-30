@@ -1,0 +1,34 @@
+---
+- name: Create redis-forgejo network
+  become: true
+  community.docker.docker_network:
+    name: redis-forgejo
+- name: Create redis-forgejo config dir
+  become: true
+  ansible.builtin.file:
+    path: /etc/redis/forgejo
+    state: directory
+    mode: '1755'
+    owner: root
+    group: root
+- name: Copy redis config
+  become: true
+  ansible.builtin.copy:
+    src: redis.conf
+    dest: /etc/redis/forgejo/redis.conf
+    mode: '0664'
+    owner: root
+    group: root
+  register: redisconf
+- name: Create redis container
+  become: true
+  community.docker.docker_container:
+    name: redis-forgejo
+    image: redis:7.4-bookworm
+    command: ["redis-server", "/etc/redis/redis.conf"]
+    volumes:
+      - /etc/redis/forgejo:/etc/redis:ro
+    networks:
+      - name: redis-forgejo
+    restart_policy: unless-stopped
+    recreate: "{{ redisconf.changed }}"

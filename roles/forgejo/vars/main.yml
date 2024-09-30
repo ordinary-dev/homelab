@@ -1,0 +1,8 @@
+postgresql_password:
+smtp_password:
+oauth2_jwt_secret:
+internal_token:
+secret_key:
+lfs_jwt_secret:
+minio_access_key_id: uTJp8KfKSETa1uYMZnSM
+minio_secret_access_key:

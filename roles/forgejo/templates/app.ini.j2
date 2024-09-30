@@ -1,0 +1,59 @@
+[DEFAULT]
+RUN_MODE=prod
+RUN_USER=forgejo
+WORK_PATH=/data
+
+[database]
+DB_TYPE=postgres
+HOST=postgresql:5432
+NAME=forgejo
+USER=forgejo
+PASSWD={{ postgresql_password }}
+
+[storage]
+STORAGE_TYPE=minio
+MINIO_ENDPOINT=minio:9000
+MINIO_ACCESS_KEY_ID={{ minio_access_key_id }}
+MINIO_SECRET_ACCESS_KEY={{ minio_secret_access_key }}
+MINIO_BUCKET=forgejo
+
+[log]
+LEVEL=warn
+ROOT_PATH=/data/log
+
+[mailer]
+ENABLED=true
+PASSWD={{ smtp_password }}
+PROTOCOL=smtps
+SMTP_ADDR=comfycamp.space
+SMTP_PORT=465
+USER=forgejo@comfycamp.space
+
+[oauth2]
+JWT_SECRET={{ oauth2_jwt_secret }}
+
+[repository]
+ROOT=/data/repositories
+
+[security]
+INSTALL_LOCK=true
+INTERNAL_TOKEN={{ internal_token }}
+SECRET_KEY={{ secret_key }}
+
+[server]
+DOMAIN=git.comfycamp.space
+ROOT_URL=https://git.comfycamp.space
+HTTP_PORT=3000
+LFS_JWT_SECRET={{ lfs_jwt_secret }}
+LFS_START_SERVER=true
+START_SSH_SERVER=true
+SSH_PORT=8022
+SSH_LISTEN_PORT=8022
+
+[session]
+COOKIE_NAME=session
+COOKIE_SECURE=true
+
+[cache]
+ADAPTER=redis
+HOST=redis://redis-forgejo:6379/0?pool_size=100&idle_timeout=180s
