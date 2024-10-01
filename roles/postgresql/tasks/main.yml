@@ -7,6 +7,15 @@
   become: true
   community.docker.docker_volume:
     name: postgresql
+- name: Copy postgresql config
+  become: true
+  ansible.builtin.copy:
+    src: postgresql.conf
+    dest: /var/lib/docker/volumes/postgresql/_data/postgresql.conf
+    mode: '0664'
+    owner: root
+    group: root
+  register: pgconf
 - name: Create postgresql container
   become: true
   community.docker.docker_container:
@@ -21,6 +30,7 @@
       POSTGRES_DB: postgres
       POSTGRES_PASSWORD: "{{ postgres_password }}"
     restart_policy: unless-stopped
+    recreate: "{{ pgconf.changed }}"
 - name: Create a function to manage users
   become: true
   community.docker.docker_container_exec:
