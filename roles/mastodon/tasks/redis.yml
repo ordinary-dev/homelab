@@ -1,48 +1,62 @@
 ---
-- name: Create docker network
+- name: Create redis-mastodon docker network
   become: true
   community.docker.docker_network:
     name: redis-mastodon
 
-- name: Create redis docker volume
+- name: Create redis-mastodon docker volume
   become: true
   community.docker.docker_volume:
     name: redis-mastodon
-- name: Create redis cache docker volume
+
+- name: Create /etc/redis/mastodon dir
   become: true
-  community.docker.docker_volume:
-    name: redis-mastodon-cache
+  ansible.builtin.file:
+    path: /etc/redis/mastodon
+    state: directory
+    mode: '1755'
+    owner: root
+    group: root
+- name: Create /etc/redis/mastodon-cache dir
+  become: true
+  ansible.builtin.file:
+    path: /etc/redis/mastodon-cache
+    state: directory
+    mode: '1755'
+    owner: root
+    group: root
 
 - name: Copy redis config
   become: true
   ansible.builtin.copy:
     src: redis.conf
-    dest: /var/lib/docker/volumes/redis-mastodon/_data/redis.conf
+    dest: /etc/redis/mastodon/redis.conf
 - name: Copy redis cache config
   become: true
   ansible.builtin.copy:
     src: redis-cache.conf
-    dest: /var/lib/docker/volumes/redis-mastodon-cache/_data/redis.conf
+    dest: /etc/redis/mastodon-cache/redis.conf
 
 - name: Create redis container
   become: true
   community.docker.docker_container:
     name: redis-mastodon
     image: redis:7.4-bookworm
-    command: ["redis-server", "/data/redis.conf"]
+    command: ["redis-server", "/etc/redis/redis.conf"]
     networks:
       - name: redis-mastodon
     volumes:
       - redis-mastodon:/data
+      - /etc/redis/mastodon:/etc/redis:ro
     restart_policy: unless-stopped
 - name: Create redis cache container
   become: true
   community.docker.docker_container:
     name: redis-mastodon-cache
     image: redis:7.4-bookworm
-    command: ["redis-server", "/data/redis.conf"]
+    command: ["redis-server", "/etc/redis/redis.conf"]
     networks:
       - name: redis-mastodon
     volumes:
-      - redis-mastodon-cache:/data
+      - /etc/redis/mastodon-cache:/etc/redis:ro
     restart_policy: unless-stopped
