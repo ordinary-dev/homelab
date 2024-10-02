@@ -1,0 +1,44 @@
+---
+- name: Create synapse volume
+  become: true
+  community.docker.docker_volume:
+    name: synapse
+- name: Create synapse config dir
+  become: true
+  ansible.builtin.file:
+    path: /etc/synapse
+    state: directory
+    mode: '1755'
+    owner: root
+    group: root
+- name: Copy synapse config
+  become: true
+  ansible.builtin.template:
+    src: synapse.yaml.j2
+    dest: /etc/synapse/homeserver.yaml
+    owner: root
+    group: root
+    mode: '0664'
+- name: Copy synapse log config
+  become: true
+  ansible.builtin.copy:
+    src: log.config
+    dest: /etc/synapse/log.config
+    owner: root
+    group: root
+    mode: '0664'
+- name: Create synapse container
+  become: true
+  community.docker.docker_container:
+    name: synapse
+    image: matrixdotorg/synapse:v1.116.0
+    volumes:
+      - synapse:/data
+      - /etc/synapse:/etc/synapse:ro
+    env:
+      SYNAPSE_CONFIG_PATH: /etc/synapse/homeserver.yaml
+    networks:
+      - name: postgresql
+    ports:
+      - 127.0.0.1:3005:8008/tcp
+    restart_policy: unless-stopped

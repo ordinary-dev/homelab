@@ -11,5 +11,7 @@ Available at [comfycamp.space](https://comfycamp.space).
 | 3002   | Vaultwarden        |                                                    |
 | 3003   | Minio console      |                                                    |
 | 3004   | Forgejo            | [git.comfycamp.space](https://git.comfycamp.space) |
+| 3005   | Synapse            |                                                    |
 | 8022   | Forgejo SSH        |                                                    |
+| 8448   | Synapse/Haproxy    |                                                    |
 | 9000   | Minio              |                                                    |

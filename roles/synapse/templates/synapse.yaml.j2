@@ -1,0 +1,21 @@
+server_name: "matrix.comfycamp.space"
+listeners:
+  - port: 8008
+    tls: false
+    type: http
+    x_forwarded: true
+    resources:
+      - names: [client, federation]
+        compress: false
+database:
+  name: psycopg2
+  args:
+    user: matrix-synapse
+    password: "{{ postgresql_password }}"
+    dbname: matrix-synapse
+    host: postgresql
+    cp_max: 10
+media_store_path: /data/media_store
+signing_key_path: /data/matrix.comfycamp.space.signing.key
+log_config: /etc/synapse/log.config
+report_stats: true

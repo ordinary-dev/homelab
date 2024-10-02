@@ -7,3 +7,4 @@
         mastodon: "{{ mastodon_postgresql_password }}"
         vaultwarden: "{{ vaultwarden_postgresql_password }}"
         forgejo: "{{ forgejo_postgresql_password }}"
+        matrix-synapse: "{{ synapse_postgresql_password }}"
