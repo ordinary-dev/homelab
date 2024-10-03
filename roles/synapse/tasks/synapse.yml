@@ -19,6 +19,7 @@
     owner: root
     group: root
     mode: '0664'
+  register: serverconf
 - name: Copy synapse log config
   become: true
   ansible.builtin.copy:
@@ -27,6 +28,7 @@
     owner: root
     group: root
     mode: '0664'
+  register: logconf
 - name: Create synapse container
   become: true
   community.docker.docker_container:
@@ -42,3 +44,4 @@
     ports:
       - 127.0.0.1:3005:8008/tcp
     restart_policy: unless-stopped
+    recreate: "{{ serverconf.changed or logconf.changed }}"

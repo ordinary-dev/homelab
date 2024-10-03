@@ -1,0 +1,32 @@
+---
+- name: Create coturn config dir
+  become: true
+  ansible.builtin.file:
+    path: /etc/coturn
+    state: directory
+    mode: '1755'
+    owner: root
+    group: root
+- name: Copy coturn config
+  become: true
+  ansible.builtin.template:
+    src: server.conf.j2
+    dest: /etc/coturn/server.conf
+    mode: '0644'
+    owner: root
+    group: root
+  register: turnconf
+- name: Create coturn container
+  become: true
+  community.docker.docker_container:
+    name: coturn
+    image: coturn/coturn:4.6.2-bookworm
+    command: ["-c", "/etc/coturn/server.conf"]
+    network_mode: host
+    restart_policy: unless-stopped
+    volumes:
+      - /etc/coturn:/etc/coturn:ro
+    mounts:
+      - type: tmpfs
+        target: /var/lib/coturn
+    recreate: "{{ turnconf.changed }}"
