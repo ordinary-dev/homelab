@@ -8,3 +8,4 @@
         vaultwarden: "{{ vaultwarden_postgresql_password }}"
         forgejo: "{{ forgejo_postgresql_password }}"
         matrix-synapse: "{{ synapse_postgresql_password }}"
+        comfycamp: "{{ comfycamp_postgresql_password }}"

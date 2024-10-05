@@ -1,0 +1,5 @@
+postgresql_user: comfycamp
+postgresql_password:
+smtp_password:
+jwt_secret:
+secret_key_base:

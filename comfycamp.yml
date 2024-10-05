@@ -1,0 +1,7 @@
+---
+- hosts: webservers
+  roles:
+    - name: comfycamp
+      postgresql_password: "{{ comfycamp_postgresql_password }}"
+      jwt_secret: "{{ comfycamp_jwt_secret }}"
+      secret_key_base: "{{ comfycamp_secret_key_base }}"

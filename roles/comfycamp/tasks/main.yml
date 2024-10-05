@@ -1,0 +1,27 @@
+- name: Create comfycamp config dir
+  become: true
+  ansible.builtin.file:
+    path: /etc/comfycamp
+    state: directory
+    owner: root
+    group: root
+    mode: 1770
+- name: Copy comfycamp config
+  become: true
+  ansible.builtin.template:
+    src: comfycamp.env
+    dest: /etc/comfycamp/.env
+    owner: root
+    group: root
+    mode: '0660'
+- name: Create comfycamp container
+  become: true
+  community.docker.docker_container:
+    name: comfycamp
+    image: git.comfycamp.space/lumin/comfycamp:v1.1.7
+    env_file: /etc/comfycamp/.env
+    networks:
+      - name: postgresql
+    ports:
+      - 127.0.0.1:3006:4000
+    restart_policy: unless-stopped

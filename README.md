@@ -12,6 +12,7 @@ Available at [comfycamp.space](https://comfycamp.space).
 | 3003          |          | Minio console      |                                                    |
 | 3004          |          | Forgejo            | [git.comfycamp.space](https://git.comfycamp.space) |
 | 3005          |          | Synapse            |                                                    |
+| 3006          |          | Comfycamp          | [comfycamp.space](https://comfycamp.space)         |
 | 3478          | tcp/udp  | Coturn             |                                                    |
 | 8022          |          | Forgejo SSH        |                                                    |
 | 8448          |          | Synapse/Haproxy    |                                                    |
